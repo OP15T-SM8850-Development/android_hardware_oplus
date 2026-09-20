@@ -481,6 +481,9 @@ ndk::ScopedAStatus Vibrator::on(int32_t timeoutMs,
         } else if (timeoutMs <= 100) {
             int32_t length;
             return perform(Effect::CLICK, EffectStrength::MEDIUM, callback, &length);
+        } else if (timeoutMs <= 450) {
+            int32_t length;
+            return perform(Effect::DOUBLE_CLICK, EffectStrength::MEDIUM, callback, &length);
         }
     }
 
@@ -722,6 +725,15 @@ ndk::ScopedAStatus Vibrator::compose(const std::vector<CompositeEffect>& composi
         return ndk::ScopedAStatus::fromExceptionCode(EX_ILLEGAL_ARGUMENT);
     }
 
+    // Suppress rapid-fire search hint bursts (e.g. Nav bar long-press hint queues 50 LOW_TICKs)
+    if (composite.size() >= 10 && composite[0].primitive == CompositePrimitive::LOW_TICK) {
+        ALOGD("Suppressing search hint vibration burst (count=%zu)", composite.size());
+        if (callback != nullptr) {
+            callback->onComplete();
+        }
+        return ndk::ScopedAStatus::ok();
+    }
+
     std::vector<CompositePrimitive> supported;
     getSupportedPrimitives(&supported);
 
@@ -766,7 +778,7 @@ ndk::ScopedAStatus Vibrator::compose(const std::vector<CompositeEffect>& composi
                     effectId = 0; // effect_2.bin
                     break;
                 case CompositePrimitive::THUD:
-                    effectId = 3; // effect_4.bin
+                    effectId = 5; // effect_8.bin (HEAVY_CLICK)
                     break;
                 case CompositePrimitive::SPIN:
                 case CompositePrimitive::QUICK_RISE:
