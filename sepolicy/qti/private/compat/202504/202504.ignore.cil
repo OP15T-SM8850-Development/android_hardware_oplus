@@ -6,6 +6,8 @@
 (typeattributeset new_objects
   ( new_objects
     horae
+    oplus_accesscontrol_service
+    oplus_security_permission_service
     osense_service
     system_fingerprint_prop
     system_oplus_iris_prop

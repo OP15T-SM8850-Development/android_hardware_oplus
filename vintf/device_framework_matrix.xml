@@ -376,4 +376,35 @@
             <instance>mms/explorer</instance>
         </interface>
     </hal>
-</compatibility-matrix>
+    <hal format="aidl" optional="true">
+        <name>vendor.oplus.hardware.cryptoeng</name>
+        <version>1</version>
+        <interface>
+            <name>ICryptoeng</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl" optional="true">
+        <name>vendor.oplus.hardware.cryptoeng</name>
+        <version>1.0</version>
+        <interface>
+            <name>ICryptoeng</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl" optional="true">
+        <name>vendor.oplus.hardware.fido.fido2ca</name>
+        <version>1</version>
+        <interface>
+            <name>IFidoDaemon</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl" optional="true">
+        <name>vendor.oplus.hardware.fido.fidoca</name>
+        <version>1</version>
+        <interface>
+            <name>IFidoDaemon</name>
+            <instance>default</instance>
+        </interface>
+    </hal></compatibility-matrix>

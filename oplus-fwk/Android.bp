@@ -4,6 +4,22 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
+// Compile-only companion for com.oplus.widget.OplusItem. The real OplusItem
+// (with its inner $Builder/$a and instance fields) is defined by OppoGallery2.apk
+// itself; OplusGridView.setAppInfo(OplusItem[][]) only needs it on the compile
+// classpath to emit the [[Lcom/oplus/widget/OplusItem; descriptor. Shipping our
+// placeholder on the boot classpath would shadow the gallery's own OplusItem and
+// break its field access (NoSuchFieldError), so this is a non-installable "libs"
+// (provided-scope) dependency that is NOT merged into oplus-fwk.jar.
+java_library {
+    name: "oplus-fwk-oplusitem-compileonly",
+    installable: false,
+
+    srcs: [
+        "compileonly/com/oplus/widget/OplusItem.java",
+    ],
+}
+
 java_library {
     name: "oplus-fwk",
     installable: true,
@@ -11,5 +27,24 @@ java_library {
     srcs: [
         "src/**/*.aidl",
         "src/**/*.java",
+    ],
+
+    libs: [
+        "oplus-fwk-oplusitem-compileonly",
+    ],
+}
+
+java_library {
+    name: "oplus-fwk-vibrator-lib",
+    installable: false,
+    sdk_version: "core_platform",
+    libs: [
+        "framework-minus-apex-headers",
+    ],
+
+    srcs: [
+        "src/com/oplus/os/LinearmotorVibrator.java",
+        "src/com/oplus/os/ILinearmotorVibratorService.java",
+        "src/com/oplus/os/WaveformEffect.java",
     ],
 }
