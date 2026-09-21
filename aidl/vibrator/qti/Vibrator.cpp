@@ -38,6 +38,7 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include <thread>
+#include <vector>
 
 #include "include/Vibrator.h"
 #ifdef USE_EFFECT_STREAM
@@ -192,7 +193,9 @@ int InputFFDevice::play(int effectId, uint32_t timeoutMs, long* playLengthMs) {
     int16_t data[CUSTOM_DATA_LEN] = {0, 0, 0};
     int ret;
 #ifdef USE_EFFECT_STREAM
-    const struct effect_stream* stream;
+    const struct effect_stream* stream = nullptr;
+    struct effect_stream scaled_stream;
+    std::vector<int8_t> scaled_samples;
 #endif
 
     /* For QMAA compliance, return OK even if vibrator device doesn't exist */
@@ -222,8 +225,22 @@ int InputFFDevice::play(int effectId, uint32_t timeoutMs, long* playLengthMs) {
 #ifdef USE_EFFECT_STREAM
             stream = get_effect_stream(effectId);
             if (stream != NULL) {
-                effect.u.periodic.custom_data = (int16_t*)stream;
-                effect.u.periodic.custom_len = sizeof(*stream);
+                if (mCurrMagnitude < STRONG_MAGNITUDE && mCurrMagnitude >= 0 && stream->length > 0) {
+                    scaled_stream = *stream;
+                    scaled_samples.resize(stream->length);
+                    const int8_t* src = stream->data;
+                    for (size_t i = 0; i < stream->length; ++i) {
+                        scaled_samples[i] = static_cast<int8_t>(
+                            (static_cast<int32_t>(src[i]) * mCurrMagnitude) / STRONG_MAGNITUDE
+                        );
+                    }
+                    scaled_stream.data = scaled_samples.data();
+                    effect.u.periodic.custom_data = (int16_t*)&scaled_stream;
+                    effect.u.periodic.custom_len = sizeof(scaled_stream);
+                } else {
+                    effect.u.periodic.custom_data = (int16_t*)stream;
+                    effect.u.periodic.custom_len = sizeof(*stream);
+                }
             }
 #endif
         } else {
@@ -252,6 +269,22 @@ int InputFFDevice::play(int effectId, uint32_t timeoutMs, long* playLengthMs) {
             if (stream != NULL && stream->play_rate_hz != 0)
                 *playLengthMs = ((stream->length * 1000) / stream->play_rate_hz) + 1;
 #endif
+        }
+
+        if (mSupportGain) {
+            struct input_event ie;
+            memset(&ie, 0, sizeof(ie));
+            ie.type = EV_FF;
+            ie.code = FF_GAIN;
+            uint32_t gain = (mCurrMagnitude > 0)
+                    ? ((uint32_t)mCurrMagnitude * 0xffff / STRONG_MAGNITUDE)
+                    : 0;
+            if (gain > 0xffff) gain = 0xffff;
+            ie.value = static_cast<int32_t>(gain);
+            ret = TEMP_FAILURE_RETRY(write(mVibraFd, &ie, sizeof(ie)));
+            if (ret == -1) {
+                ALOGE("write FF_GAIN failed in play, errno = %d", -errno);
+            }
         }
 
         play.value = 1;
@@ -315,10 +348,10 @@ int InputFFDevice::setAmplitude(uint8_t amplitude) {
 int InputFFDevice::playEffect(int effectId, EffectStrength es, long* playLengthMs) {
     switch (es) {
         case EffectStrength::LIGHT:
-            mCurrMagnitude = LIGHT_MAGNITUDE;
+            mCurrMagnitude = (effectId == 303) ? 0x47ff : ((effectId == 7) ? 0x27ff : ((effectId == 14) ? 0x1fff : (effectId == 10 ? 0x2fff : (effectId == 13 ? 0x27ff : LIGHT_MAGNITUDE))));
             break;
         case EffectStrength::MEDIUM:
-            mCurrMagnitude = MEDIUM_MAGNITUDE;
+            mCurrMagnitude = (effectId == 303) ? 0x5fff : ((effectId == 7) ? 0x3fff : ((effectId == 14) ? 0x2fff : (effectId == 10 ? 0x47ff : (effectId == 13 ? 0x3fff : MEDIUM_MAGNITUDE))));
             break;
         case EffectStrength::STRONG:
             mCurrMagnitude = STRONG_MAGNITUDE;
@@ -337,9 +370,11 @@ int InputFFDevice::playEffectWithScale(int effectId, float scale, long* playLeng
     }
     if (scale > 1.0f) scale = 1.0f;
 
-    int32_t mag = LIGHT_MAGNITUDE + static_cast<int32_t>(scale * (STRONG_MAGNITUDE - LIGHT_MAGNITUDE));
+    int32_t baseMag = static_cast<int32_t>(scale * STRONG_MAGNITUDE);
+    int32_t mag = (effectId == 303) ? static_cast<int32_t>(scale * 1.4f * STRONG_MAGNITUDE) : baseMag;
+    int32_t minMag = (effectId == 303) ? 0x2fff : ((effectId == 7) ? 0x17ff : ((effectId == 14) ? 0x0fff : (effectId == 10 ? 0x23ff : (effectId == 13 ? 0x17ff : LIGHT_MAGNITUDE))));
+    if (mag < minMag) mag = minMag;
     if (mag > STRONG_MAGNITUDE) mag = STRONG_MAGNITUDE;
-    if (mag < LIGHT_MAGNITUDE) mag = LIGHT_MAGNITUDE;
 
     mCurrMagnitude = static_cast<int16_t>(mag);
     return play(effectId, INVALID_VALUE, playLengthMs);
@@ -475,7 +510,10 @@ ndk::ScopedAStatus Vibrator::on(int32_t timeoutMs,
 
     if (!ledVib.mDetected) {
         // Intercept short one-shot durations and use crisp O-Haptic waveforms
-        if (timeoutMs <= 40) {
+        if (timeoutMs <= 15) {
+            int32_t length;
+            return perform(Effect::TEXTURE_TICK, EffectStrength::LIGHT, callback, &length);
+        } else if (timeoutMs <= 40) {
             int32_t length;
             return perform(Effect::TICK, EffectStrength::LIGHT, callback, &length);
         } else if (timeoutMs <= 100) {
@@ -570,15 +608,20 @@ ndk::ScopedAStatus Vibrator::perform(Effect effect, EffectStrength es,
         // Return magic value for play length so that we won't end up calling on() / off()
         playLengthMs = 150;
     } else {
-        if (effect < Effect::CLICK || effect > Effect::HEAVY_CLICK)
-            return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
+        if (effect == Effect::TEXTURE_TICK) {
+            ret = ff.playEffect(303, EffectStrength::LIGHT, &playLengthMs);
+            if (ret != 0) return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_SERVICE_SPECIFIC));
+        } else {
+            if (effect < Effect::CLICK || effect > Effect::HEAVY_CLICK)
+                return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
 
-        if (es != EffectStrength::LIGHT && es != EffectStrength::MEDIUM &&
-            es != EffectStrength::STRONG)
-            return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
+            if (es != EffectStrength::LIGHT && es != EffectStrength::MEDIUM &&
+                es != EffectStrength::STRONG)
+                return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_UNSUPPORTED_OPERATION));
 
-        ret = ff.playEffect((static_cast<int>(effect)), es, &playLengthMs);
-        if (ret != 0) return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_SERVICE_SPECIFIC));
+            ret = ff.playEffect((static_cast<int>(effect)), es, &playLengthMs);
+            if (ret != 0) return ndk::ScopedAStatus(AStatus_fromExceptionCode(EX_SERVICE_SPECIFIC));
+        }
     }
 
     if (callback != nullptr) {
@@ -600,7 +643,8 @@ ndk::ScopedAStatus Vibrator::getSupportedEffects(std::vector<Effect>* _aidl_retu
                          Effect::TEXTURE_TICK};
     } else {
         *_aidl_return = {Effect::CLICK, Effect::DOUBLE_CLICK, Effect::TICK,
-                         Effect::THUD,  Effect::POP,          Effect::HEAVY_CLICK};
+                         Effect::THUD,  Effect::POP,          Effect::HEAVY_CLICK,
+                         Effect::TEXTURE_TICK};
     }
     return ndk::ScopedAStatus::ok();
 }
@@ -695,23 +739,25 @@ ndk::ScopedAStatus Vibrator::getPrimitiveDuration(CompositePrimitive primitive,
             *durationMs = 18;
             break;
         case CompositePrimitive::THUD:
-            *durationMs = 18;
+            *durationMs = 10;
             break;
         case CompositePrimitive::SPIN:
-            *durationMs = 60;
+            *durationMs = 20;
             break;
         case CompositePrimitive::QUICK_RISE:
-            *durationMs = 60;
+            *durationMs = 55;
             break;
         case CompositePrimitive::SLOW_RISE:
             *durationMs = 80;
             break;
         case CompositePrimitive::QUICK_FALL:
-            *durationMs = 60;
+            *durationMs = 75;
             break;
         case CompositePrimitive::LIGHT_TICK:
+            *durationMs = 10;
+            break;
         case CompositePrimitive::LOW_TICK:
-            *durationMs = 15;
+            *durationMs = 5;
             break;
         default:
             return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
@@ -775,19 +821,29 @@ ndk::ScopedAStatus Vibrator::compose(const std::vector<CompositeEffect>& composi
             int effectId;
             switch (e.primitive) {
                 case CompositePrimitive::CLICK:
-                    effectId = 0; // effect_2.bin
+                    effectId = 0; // effect_2.bin (9.2ms CLICK)
                     break;
                 case CompositePrimitive::THUD:
-                    effectId = 5; // effect_8.bin (HEAVY_CLICK)
+                    effectId = 3; // effect_4.bin (9.2ms THUD)
                     break;
                 case CompositePrimitive::SPIN:
+                    effectId = 0; // effect_2.bin (9.2ms CLICK / TOGGLE)
+                    break;
                 case CompositePrimitive::QUICK_RISE:
+                    effectId = 47; // effect_47.bin (54.2ms QUICK_RISE)
+                    break;
                 case CompositePrimitive::SLOW_RISE:
+                    effectId = 60; // effect_60.bin (80.5ms SLOW_RISE)
+                    break;
                 case CompositePrimitive::QUICK_FALL:
-                    effectId = 4; // effect_5.bin
+                    effectId = 61; // effect_61.bin (73.4ms QUICK_FALL)
                     break;
                 case CompositePrimitive::LIGHT_TICK:
+                    effectId = 13; // effect_13.bin (8.4ms soft KEYBOARD_TAP)
+                    break;
                 case CompositePrimitive::LOW_TICK:
+                    effectId = 303; // effect_303.bin (5.17ms crisp micro-tick for sliders & Circle to Search)
+                    break;
                 default:
                     effectId = 2; // effect_1.bin
                     break;
