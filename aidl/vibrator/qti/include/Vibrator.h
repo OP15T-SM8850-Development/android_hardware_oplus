@@ -31,6 +31,7 @@
 
 #include <aidl/android/hardware/vibrator/BnVibrator.h>
 #include <atomic>
+#include <mutex>
 
 namespace aidl {
 namespace android {
@@ -52,9 +53,11 @@ class InputFFDevice {
 
   private:
     int play(int effectId, uint32_t timeoutMs, long* playLengthMs);
+    int removeCurrentEffect();
     int mVibraFd;
     int16_t mCurrAppId;
     int16_t mCurrMagnitude;
+    std::mutex mMutex;
 };
 
 class LedVibratorDevice {

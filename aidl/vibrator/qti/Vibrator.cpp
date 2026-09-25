@@ -35,9 +35,11 @@
 #include <inttypes.h>
 #include <linux/input.h>
 #include <log/log.h>
+#include <errno.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <thread>
+#include <unistd.h>
 #include <vector>
 
 #include "include/Vibrator.h"
@@ -169,6 +171,34 @@ InputFFDevice::InputFFDevice() {
     closedir(dp);
 }
 
+int InputFFDevice::removeCurrentEffect() {
+    if (mCurrAppId == INVALID_VALUE) return 0;
+
+    // Stop the effect before removing it. Some qcom-hv-haptics revisions keep
+    // the custom FIFO busy until an explicit EV_FF stop event is received.
+    struct input_event stop = {};
+    stop.type = EV_FF;
+    stop.code = mCurrAppId;
+    stop.value = 0;
+    if (TEMP_FAILURE_RETRY(write(mVibraFd, &stop, sizeof(stop))) == -1) {
+        ALOGW("write FF stop failed, errno = %d", errno);
+    }
+
+    int ret = -1;
+    for (int attempt = 0; attempt < 20; ++attempt) {
+        ret = TEMP_FAILURE_RETRY(ioctl(mVibraFd, EVIOCRMFF, mCurrAppId));
+        if (ret == 0) {
+            mCurrAppId = INVALID_VALUE;
+            return 0;
+        }
+        if (errno != EBUSY) break;
+        usleep(2000);
+    }
+
+    ALOGE("ioctl EVIOCRMFF failed after retry, errno = %d", errno);
+    return ret;
+}
+
 /** Play vibration
  *
  *  @param effectId:  ID of the predefined effect will be played. If effectId is valid
@@ -206,12 +236,10 @@ int InputFFDevice::play(int effectId, uint32_t timeoutMs, long* playLengthMs) {
 
     if (timeoutMs != 0) {
         if (mCurrAppId != INVALID_VALUE) {
-            ret = TEMP_FAILURE_RETRY(ioctl(mVibraFd, EVIOCRMFF, mCurrAppId));
-            if (ret == -1) {
-                ALOGE("ioctl EVIOCRMFF failed, errno = %d", -errno);
+            ret = removeCurrentEffect();
+            if (ret != 0) {
                 goto errout;
             }
-            mCurrAppId = INVALID_VALUE;
         }
 
         memset(&effect, 0, sizeof(effect));
@@ -256,9 +284,13 @@ int InputFFDevice::play(int effectId, uint32_t timeoutMs, long* playLengthMs) {
         effect.id = mCurrAppId;
         effect.replay.delay = 0;
 
-        ret = TEMP_FAILURE_RETRY(ioctl(mVibraFd, EVIOCSFF, &effect));
+        for (int attempt = 0; attempt < 20; ++attempt) {
+            ret = TEMP_FAILURE_RETRY(ioctl(mVibraFd, EVIOCSFF, &effect));
+            if (ret == 0 || errno != EBUSY) break;
+            usleep(2000);
+        }
         if (ret == -1) {
-            ALOGE("ioctl EVIOCSFF failed, errno = %d", -errno);
+            ALOGE("ioctl EVIOCSFF failed after retry, errno = %d", -errno);
             goto errout;
         }
 
@@ -295,34 +327,33 @@ int InputFFDevice::play(int effectId, uint32_t timeoutMs, long* playLengthMs) {
         ret = TEMP_FAILURE_RETRY(write(mVibraFd, (const void*)&play, sizeof(play)));
         if (ret == -1) {
             ALOGE("write failed, errno = %d\n", -errno);
-            ret = TEMP_FAILURE_RETRY(ioctl(mVibraFd, EVIOCRMFF, mCurrAppId));
-            if (ret == -1) ALOGE("ioctl EVIOCRMFF failed, errno = %d", -errno);
+            removeCurrentEffect();
             goto errout;
         }
     } else if (mCurrAppId != INVALID_VALUE) {
-        ret = TEMP_FAILURE_RETRY(ioctl(mVibraFd, EVIOCRMFF, mCurrAppId));
-        if (ret == -1) {
-            ALOGE("ioctl EVIOCRMFF failed, errno = %d", -errno);
+        ret = removeCurrentEffect();
+        if (ret != 0) {
             goto errout;
         }
-        mCurrAppId = INVALID_VALUE;
     }
     return 0;
 
 errout:
-    mCurrAppId = INVALID_VALUE;
     return ret;
 }
 
 int InputFFDevice::on(int32_t timeoutMs) {
+    std::lock_guard<std::mutex> lock(mMutex);
     return play(INVALID_VALUE, timeoutMs, NULL);
 }
 
 int InputFFDevice::off() {
+    std::lock_guard<std::mutex> lock(mMutex);
     return play(INVALID_VALUE, 0, NULL);
 }
 
 int InputFFDevice::setAmplitude(uint8_t amplitude) {
+    std::lock_guard<std::mutex> lock(mMutex);
     int tmp, ret;
     struct input_event ie;
 
@@ -346,6 +377,7 @@ int InputFFDevice::setAmplitude(uint8_t amplitude) {
 }
 
 int InputFFDevice::playEffect(int effectId, EffectStrength es, long* playLengthMs) {
+    std::lock_guard<std::mutex> lock(mMutex);
     switch (es) {
         case EffectStrength::LIGHT:
             mCurrMagnitude = (effectId == 303) ? 0x47ff : ((effectId == 7) ? 0x27ff : ((effectId == 14) ? 0x1fff : (effectId == 10 ? 0x2fff : (effectId == 13 ? 0x27ff : LIGHT_MAGNITUDE))));
@@ -364,6 +396,7 @@ int InputFFDevice::playEffect(int effectId, EffectStrength es, long* playLengthM
 }
 
 int InputFFDevice::playEffectWithScale(int effectId, float scale, long* playLengthMs) {
+    std::lock_guard<std::mutex> lock(mMutex);
     if (scale <= 0.0f) {
         if (playLengthMs != nullptr) *playLengthMs = 0;
         return 0;
