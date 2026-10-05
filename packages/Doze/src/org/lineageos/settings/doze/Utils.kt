@@ -106,7 +106,9 @@ object Utils {
         return isPickUpEnabled(context) || isPocketEnabled(context)
     }
 
-    fun getSensor(sm: SensorManager, type: String?): Sensor? {
-        return sm.getSensorList(Sensor.TYPE_ALL).find { it.stringType == type }
+    fun getSensor(sm: SensorManager, type: String?, requireWakeUp: Boolean = false): Sensor? {
+        return sm.getSensorList(Sensor.TYPE_ALL).find {
+            it.stringType == type && (!requireWakeUp || it.isWakeUpSensor)
+        }
     }
 }
