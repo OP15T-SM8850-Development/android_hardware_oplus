@@ -406,6 +406,11 @@ int InputFFDevice::playEffectWithScale(int effectId, float scale, long* playLeng
     int32_t baseMag = static_cast<int32_t>(scale * STRONG_MAGNITUDE);
     int32_t mag = (effectId == 303) ? static_cast<int32_t>(scale * 1.4f * STRONG_MAGNITUDE) : baseMag;
     int32_t minMag = (effectId == 303) ? 0x2fff : ((effectId == 7) ? 0x17ff : ((effectId == 14) ? 0x0fff : (effectId == 10 ? 0x23ff : (effectId == 13 ? 0x17ff : LIGHT_MAGNITUDE))));
+    // Preserve the original strength curve for the soft slider tick waveform.
+    if (effectId == 2) {
+        mag = LIGHT_MAGNITUDE
+                + static_cast<int32_t>(scale * (STRONG_MAGNITUDE - LIGHT_MAGNITUDE));
+    }
     if (mag < minMag) mag = minMag;
     if (mag > STRONG_MAGNITUDE) mag = STRONG_MAGNITUDE;
 
@@ -790,7 +795,7 @@ ndk::ScopedAStatus Vibrator::getPrimitiveDuration(CompositePrimitive primitive,
             *durationMs = 10;
             break;
         case CompositePrimitive::LOW_TICK:
-            *durationMs = 5;
+            *durationMs = 15;
             break;
         default:
             return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
@@ -875,7 +880,7 @@ ndk::ScopedAStatus Vibrator::compose(const std::vector<CompositeEffect>& composi
                     effectId = 13; // effect_13.bin (8.4ms soft KEYBOARD_TAP)
                     break;
                 case CompositePrimitive::LOW_TICK:
-                    effectId = 303; // effect_303.bin (5.17ms crisp micro-tick for sliders & Circle to Search)
+                    effectId = 2; // effect_1.bin, original soft slider tick
                     break;
                 default:
                     effectId = 2; // effect_1.bin
