@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Trợ giúp</string>
+    <string name="doze_settings_help_text">Các tính năng này sử dụng các sự kiện cảm biến để khởi chạy kích hoạt một thông báo doze. Các cảm biến được chọn chỉ được kích hoạt khi thiết bị nhận một thông báo, điều này giúp giảm thiểu việc sử dụng pin. Ngoài ra còn có một tùy chọn để kích hoạt các cảm biến được chọn ngay khi màn hình tắt, điều này sẽ gây ra việc sử dụng pin cao hơn.</string>
+</resources>

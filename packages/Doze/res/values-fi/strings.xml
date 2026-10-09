@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Apua</string>
+    <string name="doze_settings_help_text">Ominaisuudet käyttää sensorin tapahtumia näyttääkseen ilmoituksia. Valittu sensori on vain käytössä kun laite saa ilmoituksen, tämä auttaa vähentämään akun kulutusta. Voit myös ottaa sensorit käyttöön kun näyttö on suljettu, mutta tämä kasvattaa akun kulutusta.</string>
+</resources>

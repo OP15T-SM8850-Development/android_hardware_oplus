@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">帮助</string>
+    <string name="doze_settings_help_text">这些功能使用传感器事件来启用打盹通知指示灯。所选的传感器仅在设备收到通知时启用，这有助于降低电池消耗。还有一个选项是在屏幕关闭后马上启用所选的传感器，这会消耗更多的电量。</string>
+</resources>

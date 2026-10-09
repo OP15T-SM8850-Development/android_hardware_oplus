@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Hjelp</string>
+    <string name="doze_settings_help_text">Desse funksjonane brukar sensorar for å visa varsel når eininga er i kvile. Den valde sensoren vert berre slegen på når eininga får eit varsel, noko som sparar straum. Du kan òg velja å slå på sensoren med ein gong skjermen sloknar, men då brukar han meir straum.</string>
+</resources>

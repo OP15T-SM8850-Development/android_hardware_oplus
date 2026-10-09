@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Допомога</string>
+    <string name="doze_settings_help_text">Ці функції використовують події датчиків для показу сповіщень. Датчик перевіряється лише під час надходження нової події, що дозволяє економити заряд батареї. Можна активувати датчики одразу після вимкнення екрану пристрою, але це призведе до прискореного розряду батареї.</string>
+</resources>

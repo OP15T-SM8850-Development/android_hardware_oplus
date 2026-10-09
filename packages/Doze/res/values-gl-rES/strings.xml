@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Axuda</string>
+    <string name="doze_settings_help_text">Estas características usan eventos do sensor para amosar unha notificación latente. O sensor seleccionado habilitarase só cando reciba unha notificación axudando a reducir o consumo da batería. Tamén existe unha opción para activar o sensor así que se apague a pantalla, pero isto causará un maior uso da batería.</string>
+</resources>

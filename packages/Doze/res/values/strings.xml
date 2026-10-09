@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- TODO: Remove these compatibility strings and their translations when the
+     obsolete first-open help dialog is removed from DozeSettingsFragment.
+     Upstream removal: LineageOS/android_hardware_oplus commit
+     724e4d93e5583c3ad893f03d298e1840a045d25d. -->
+<resources>
+    <string name="doze_settings_help_title">Help</string>
+    <string name="doze_settings_help_text">These features use sensor events to launch a doze notification pulse. The chosen sensor is only enabled when the device receives a notification, this helps to reduce battery usage. There is also an option to enable the chosen sensor as soon as the screen turns off, this will cause higher battery usage.</string>
+</resources>
