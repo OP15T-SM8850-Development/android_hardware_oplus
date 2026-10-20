@@ -130,6 +130,16 @@ public class OplusActivityManager extends OplusBaseActivityManager implements IO
         return true;
     }
 
+    public boolean registerComplexSceneObserver(Bundle bundle,
+            com.oplus.osense.complexscene.OplusComplexSceneObserver observer) {
+        return false;
+    }
+
+    public boolean unregisterComplexSceneObserver(Bundle bundle,
+            com.oplus.osense.complexscene.OplusComplexSceneObserver observer) {
+        return false;
+    }
+
     public void addBackgroundRestrictedInfo(String pkg, java.util.List<String> list) {
     }
 
