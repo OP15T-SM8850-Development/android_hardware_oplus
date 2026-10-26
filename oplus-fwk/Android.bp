@@ -4,6 +4,10 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
+// Stubs that must stay on the boot classpath: the stock IMS / telephony apks
+// and system_server (OplusAccessControlManagerService) link against them. The
+// stubs only the Oplus camera apps need live in oplus-camera-fwk
+// (packages/features/OplusCamera).
 java_library {
     name: "oplus-fwk",
     installable: true,

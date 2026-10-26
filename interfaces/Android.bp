@@ -17,6 +17,10 @@ aidl_interface {
             enabled: true,
         },
         java: {
+            enabled: true,
+            sdk_version: "module_current",
+        },
+        rust: {
             enabled: false,
         },
     },
@@ -44,6 +48,9 @@ aidl_interface {
         java: {
             sdk_version: "module_current",
         },
+        rust: {
+            enabled: false,
+        },
     },
     versions_with_info: [
         {
@@ -67,6 +74,9 @@ aidl_interface {
             enabled: true,
         },
         java: {
+            sdk_version: "module_current",
+        },
+        rust: {
             enabled: false,
         },
     },
@@ -92,6 +102,9 @@ aidl_interface {
             enabled: true,
         },
         java: {
+            enabled: false,
+        },
+        rust: {
             enabled: false,
         },
     },
@@ -127,6 +140,9 @@ aidl_interface {
         java: {
             enabled: false,
         },
+        rust: {
+            enabled: false,
+        },
     },
     versions_with_info: [
         {
@@ -150,6 +166,9 @@ aidl_interface {
             enabled: true,
         },
         java: {
+            enabled: false,
+        },
+        rust: {
             enabled: false,
         },
     },
@@ -176,6 +195,9 @@ aidl_interface {
         },
         java: {
             sdk_version: "module_current",
+        },
+        rust: {
+            enabled: false,
         },
     },
     versions_with_info: [
@@ -238,6 +260,9 @@ aidl_interface {
         java: {
             sdk_version: "module_current",
         },
+        rust: {
+            enabled: false,
+        },
     },
     versions_with_info: [
         {
@@ -261,6 +286,9 @@ aidl_interface {
             enabled: true,
         },
         java: {
+            enabled: false,
+        },
+        rust: {
             enabled: false,
         },
     },
@@ -293,6 +321,9 @@ aidl_interface {
         java: {
             enabled: false,
         },
+        rust: {
+            enabled: false,
+        },
     },
     versions_with_info: [
         {
@@ -322,6 +353,9 @@ aidl_interface {
         java: {
             enabled: false,
         },
+        rust: {
+            enabled: false,
+        },
     },
     versions_with_info: [
         {
@@ -345,6 +379,9 @@ aidl_interface {
             enabled: true,
         },
         java: {
+            enabled: false,
+        },
+        rust: {
             enabled: false,
         },
     },
@@ -373,6 +410,9 @@ aidl_interface {
         },
         java: {
             sdk_version: "module_current",
+        },
+        rust: {
+            enabled: false,
         },
     },
     versions_with_info: [
@@ -403,6 +443,9 @@ aidl_interface {
         java: {
             enabled: false,
         },
+        rust: {
+            enabled: false,
+        },
     },
     versions_with_info: [
         {
@@ -428,6 +471,9 @@ aidl_interface {
         java: {
             sdk_version: "module_current",
         },
+        rust: {
+            enabled: false,
+        },
     },
     versions_with_info: [
         {
@@ -452,6 +498,9 @@ aidl_interface {
         },
         java: {
             sdk_version: "module_current",
+        },
+        rust: {
+            enabled: false,
         },
     },
     versions_with_info: [
@@ -511,6 +560,9 @@ aidl_interface {
         java: {
             sdk_version: "module_current",
         },
+        rust: {
+            enabled: false,
+        },
     },
     versions_with_info: [
         {
@@ -535,6 +587,9 @@ aidl_interface {
         },
         java: {
             sdk_version: "module_current",
+        },
+        rust: {
+            enabled: false,
         },
     },
     versions_with_info: [
@@ -569,6 +624,9 @@ aidl_interface {
         java: {
             enabled: false,
         },
+        rust: {
+            enabled: false,
+        },
     },
     versions_with_info: [
         {
@@ -593,6 +651,9 @@ aidl_interface {
         },
         java: {
             sdk_version: "module_current",
+        },
+        rust: {
+            enabled: false,
         },
     },
     versions_with_info: [
@@ -623,6 +684,9 @@ aidl_interface {
         java: {
             enabled: false,
         },
+        rust: {
+            enabled: false,
+        },
     },
     versions_with_info: [
         {
@@ -646,6 +710,9 @@ aidl_interface {
             enabled: true,
         },
         java: {
+            enabled: false,
+        },
+        rust: {
             enabled: false,
         },
     },
@@ -677,6 +744,9 @@ aidl_interface {
         java: {
             sdk_version: "module_current",
         },
+        rust: {
+            enabled: false,
+        },
     },
     versions_with_info: [
         {
@@ -697,7 +767,7 @@ aidl_interface {
 aidl_interface {
     name: "vendor.oplus.hardware.subsys_imsrtp",
     system_ext_specific: true,
-    vendor_available: true,
+    odm_available: true,
     local_include_dir: "aidl",
     srcs: ["aidl/vendor/oplus/hardware/subsys_imsrtp/*.aidl"],
     stability: "vintf",
@@ -708,6 +778,9 @@ aidl_interface {
             enabled: true,
         },
         java: {
+            enabled: false,
+        },
+        rust: {
             enabled: false,
         },
     },
@@ -737,6 +810,9 @@ aidl_interface {
         },
         java: {
             enabled: true,
+        },
+        rust: {
+            enabled: false,
         },
     },
     versions_with_info: [
@@ -778,6 +854,9 @@ aidl_interface {
         },
         java: {
             enabled: true,
+        },
+        rust: {
+            enabled: false,
         },
     },
     imports: [
@@ -841,6 +920,9 @@ aidl_interface {
         java: {
             sdk_version: "module_current",
         },
+        rust: {
+            enabled: false,
+        },
     },
     versions_with_info: [
         {
@@ -872,6 +954,9 @@ aidl_interface {
         },
         java: {
             sdk_version: "module_current",
+        },
+        rust: {
+            enabled: false,
         },
     },
     versions_with_info: [
