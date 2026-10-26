@@ -11,8 +11,8 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.SystemClock
+import android.os.PowerManager
 import android.util.Log
-import java.util.concurrent.Executors
 
 class PocketSensor(
     private val context: Context,
@@ -20,12 +20,15 @@ class PocketSensor(
     private val sensorValue: Float,
 ) : SensorEventListener {
     private val sensorManager = context.getSystemService(SensorManager::class.java)!!
-    private val sensor = Utils.getSensor(sensorManager, sensorType)
+    private val sensor = Utils.getSensor(sensorManager, sensorType, requireWakeUp = true)
 
-    private val executorService = Executors.newSingleThreadExecutor()
+    private var registered = false
     private var entryTimestamp = 0L
 
     override fun onSensorChanged(event: SensorEvent) {
+        if (!registered || context.getSystemService(PowerManager::class.java)!!.isInteractive
+            || !Utils.isPocketEnabled(context)
+            || !Utils.isDozeEnabled(context) || Utils.isAlwaysOnEnabled(context)) return
         if (DEBUG) Log.d(TAG, "Got sensor event: ${event.values[0]}")
         val delta = SystemClock.elapsedRealtime() - entryTimestamp
         if (delta < MIN_PULSE_INTERVAL_MS) {
@@ -40,20 +43,14 @@ class PocketSensor(
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
 
     fun enable() {
-        if (sensor != null) {
-            Log.d(TAG, "Enabling")
-            executorService.submit {
-                entryTimestamp = SystemClock.elapsedRealtime()
-                sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL)
-            }
-        }
+        if (sensor == null || registered) return
+        entryTimestamp = SystemClock.elapsedRealtime()
+        registered = sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
     fun disable() {
-        if (sensor != null) {
-            Log.d(TAG, "Disabling")
-            executorService.submit { sensorManager.unregisterListener(this, sensor) }
-        }
+        registered = false
+        sensorManager.unregisterListener(this)
     }
 
     companion object {

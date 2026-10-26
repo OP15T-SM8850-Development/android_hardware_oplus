@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">یارمەتی</string>
+    <string name="doze_settings_help_text">ئەم تایبەتمەندییانە هەستەوەرەکان بەکاردەهێنن بۆ نیشاندانی ئاگانامەکان. هەستەوەری دیاریکراو تەنها کاتێک چالاک دەبێت کە ئامێرەکە ئاگانامەیەکی پێ بگات، ئەمەش یارمەتی کەمکردنەوەی بەکاربردنی باتری دەدات.</string>
+</resources>

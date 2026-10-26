@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Cobhair</string>
+    <string name="doze_settings_help_text">Cleachdaidh na gleusan seo tachartasan mhothaichearan airson frith-bhualadh brath cadail. Cha bhi am mothaichear a thagh thu an comas ach nuair a gheibh an t-uidheam brath; cuidichidh seo le caomhnadh a’ bhataraidh. Tha roghainn ann cuideachd a chuireas am mothaichear a thagh thu an comas mu thràth nuair a thèid an sgrìn a chur dheth agus thèid barrachd dhen bhataraidh a chaitheamh le sin.</string>
+</resources>

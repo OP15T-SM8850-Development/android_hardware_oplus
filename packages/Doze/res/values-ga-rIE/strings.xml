@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Cabhrú</string>
+    <string name="doze_settings_help_text">Úsáideann na gnéithe seo imeachtaí braite chun buille fógra doze a sheoladh. Níl an braiteoir roghnaithe cumasaithe ach amháin nuair a fhaigheann an gléas fógra, cabhraíonn sé seo le húsáid ceallraí a laghdú. Tá rogha ann freisin an braiteoir roghnaithe a chumasú chomh luath agus a mhúchadh an scáileán, beidh sé seo ina chúis le húsáid ceallraí níos airde.</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Ayuda</string>
+    <string name="doze_settings_help_text">Estas funciones usan eventos de los sensores para emitir un pulso de notificación Doze. El sensor elegido solo se activa cuando el dispositivo recibe una notificación, lo que ayuda a reducir el consumo de batería. También hay una opción para activar el sensor elegido tan pronto como la pantalla se apaga, esto causará un mayor uso de la batería.</string>
+</resources>

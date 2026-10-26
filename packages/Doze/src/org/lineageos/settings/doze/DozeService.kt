@@ -10,19 +10,34 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.SharedPreferences
+import android.database.ContentObserver
+import android.os.Handler
+import android.os.Looper
+import android.os.PowerManager
+import android.provider.Settings
+import androidx.preference.PreferenceManager
 import android.os.IBinder
 import android.util.Log
 
 class DozeService : Service() {
     private lateinit var pickupSensor: PickupSensor
     private lateinit var pocketSensor: PocketSensor
+    private var destroyed = false
+    private lateinit var preferences: SharedPreferences
+    private val settingsObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+        override fun onChange(selfChange: Boolean) { updateSensors() }
+    }
+    private val preferencesListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+        updateSensors()
+    }
 
     private val screenStateReceiver =
         object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 when (intent.action) {
-                    Intent.ACTION_SCREEN_ON -> onDisplayOn()
-                    Intent.ACTION_SCREEN_OFF -> onDisplayOff()
+                    Intent.ACTION_SCREEN_ON -> disableSensors()
+                    Intent.ACTION_SCREEN_OFF -> updateSensors()
                 }
             }
         }
@@ -46,38 +61,44 @@ class DozeService : Service() {
         screenStateFilter.addAction(Intent.ACTION_SCREEN_ON)
         screenStateFilter.addAction(Intent.ACTION_SCREEN_OFF)
         registerReceiver(screenStateReceiver, screenStateFilter)
+        preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        preferences.registerOnSharedPreferenceChangeListener(preferencesListener)
+        contentResolver.registerContentObserver(
+            Settings.Secure.getUriFor(Settings.Secure.DOZE_ENABLED), false, settingsObserver)
+        contentResolver.registerContentObserver(
+            Settings.Secure.getUriFor(Settings.Secure.DOZE_ALWAYS_ON), false, settingsObserver)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        updateSensors()
         return START_STICKY
     }
 
     override fun onDestroy() {
+        destroyed = true
         super.onDestroy()
 
         unregisterReceiver(screenStateReceiver)
-        pickupSensor.disable()
-        pocketSensor.disable()
+        preferences.unregisterOnSharedPreferenceChangeListener(preferencesListener)
+        contentResolver.unregisterContentObserver(settingsObserver)
+        disableSensors()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
-    private fun onDisplayOn() {
-        if (Utils.isPickUpEnabled(this)) {
-            pickupSensor.disable()
-        }
-        if (Utils.isPocketEnabled(this)) {
-            pocketSensor.disable()
-        }
+    private fun disableSensors() {
+        pickupSensor.disable()
+        pocketSensor.disable()
     }
 
-    private fun onDisplayOff() {
-        if (Utils.isPickUpEnabled(this)) {
-            pickupSensor.enable()
-        }
-        if (Utils.isPocketEnabled(this)) {
-            pocketSensor.enable()
-        }
+    private fun updateSensors() {
+        if (destroyed) return
+        val canListen = !getSystemService(PowerManager::class.java)!!.isInteractive &&
+            Utils.isDozeEnabled(this) && !Utils.isAlwaysOnEnabled(this)
+        if (canListen && Utils.isPickUpEnabled(this)) pickupSensor.enable()
+        else pickupSensor.disable()
+        if (canListen && Utils.isPocketEnabled(this)) pocketSensor.enable()
+        else pocketSensor.disable()
     }
 
     companion object {

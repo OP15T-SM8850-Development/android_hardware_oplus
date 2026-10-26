@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Pomoc</string>
+    <string name="doze_settings_help_text">Te funkcje używają czujników, aby pokazywać powiadomienia tylko w odpowiednim momencie. Czujniki są wykorzystywane, kiedy telefon odbierze powiadomienie. Pomaga to w oszczędzaniu baterii. Istnieje również możliwość, aby włączyć wybrany czujnik zaraz po wyłączeniu ekranu, spowoduje to większe zużycie baterii.</string>
+</resources>
