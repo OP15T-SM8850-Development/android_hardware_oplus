@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Ndihmë</string>
+    <string name="doze_settings_help_text">Këto funksione përdorin sensorin për të shfaqur njoftimet në modalitetin Doze. Sensori i zgjedhur aktivizohet vetëm kur pajisja merr një njoftim, dhe kjo ndihmon në reduktimin e përdorimit të baterisë. Ka edhe një opsion për të aktivizuar sensorin e zgjedhur menjëherë pasi ekrani të fiket. Ky opsion do të bëjë që bateria të përdoret më shumë.</string>
+</resources>

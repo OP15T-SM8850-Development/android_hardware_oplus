@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Jutori</string>
+    <string name="doze_settings_help_text">Chestis funzions a doprin i events dai sensôrs par mostrâ lis notifiche in modalitât durmide. Il sensôr selezionât al vignarà ativât dome cuant che il dispositîf al ricevarà une notifiche, chest al jude a diminuî il consum di batarie. Al è ancje pussibil ativâ il sensôr selezionât a pene che il schermi si distude, ma chest al doprarà plui batarie.</string>
+</resources>

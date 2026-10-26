@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Uživatelská příručka</string>
+    <string name="doze_settings_help_text">Tyto funkce používají události senzorů ke spuštění pulzování oznámení. Vybraný senzor je zapnut pouze v případě přijetí upozornění, což vede k úspoře baterie. Je zde i možnost zapnout daný senzor ihned po vypnutí obrazovky, ale dochází k většímu vybíjení.</string>
+</resources>

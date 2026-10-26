@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Помоћ</string>
+    <string name="doze_settings_help_text">Ова функција користи активирање сензора да покрене пулсно обавештење. Изабрани сензор је омогућен једино када уређај прима обавештење, то помаже смањењу потрожње батерије. Ту је и опција омогућења изабраног сензора чим се екран искључи, то ће узроковати већој потрожњи батерије.</string>
+</resources>

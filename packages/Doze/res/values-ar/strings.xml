@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">مساعدة</string>
+    <string name="doze_settings_help_text">هذه المزايا تستخدم أحداث الحساس لبدء إشعار نبضي للسبات. حيث يتم تفعيل الحساس المختار فقط عند استلام إشعار، وهذا يساعد على تقليل استخدام البطارية. ويوجد أيضًا خيار لتفعيل الحساس المختار حالما تغلق الشاشة، ولكن هذا سيزيد من استخدام البطارية.</string>
+</resources>

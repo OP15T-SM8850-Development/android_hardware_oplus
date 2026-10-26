@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">עזרה</string>
+    <string name="doze_settings_help_text">תכונות אלו משתמשות באירועי חיישנים כדי להפעיל פעימת התראה במצב Doze. החיישן שנבחר מופעל רק כאשר המכשיר מקבל התראה, דבר המסייע להפחתת צריכת הסוללה. קיימת גם אפשרות להפעיל את החיישן מיד עם כיבוי המסך, אך פעולה זו תגרום לצריכת סוללה גבוהה יותר.</string>
+</resources>

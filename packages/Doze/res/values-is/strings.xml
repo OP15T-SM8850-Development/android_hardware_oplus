@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Hjálp</string>
+    <string name="doze_settings_help_text">Þessir eiginleikar nota atvik frá skynjurum til að senda púls um tilkynningu þegar verið er í svæfingu. Valinn skynjari er aðeins virkur þegar tækið tekur við tilkynningu, þetta hjálpar til við að spara rafhlöður. Einnig er sá valkostur að virkja valinn skynjara um leið og slökkt er á skjá, þetta leiðir til meiri notkunar rafhleðslu.</string>
+</resources>

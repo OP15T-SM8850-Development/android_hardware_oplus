@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Ajuda</string>
+    <string name="doze_settings_help_text">Esses recursos monitoram o sensor para que o dispositivo possa pulsar notificações enquanto está em repouso. O sensor escolhido só é ativado quando o dispositivo recebe uma notificação, isso ajuda a reduzir o uso de bateria. Há também uma opção para ativar o sensor escolhido assim que a tela desliga, isso causará o maior uso da bateria.</string>
+</resources>

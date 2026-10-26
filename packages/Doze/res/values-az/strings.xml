@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="doze_settings_help_title">Kömək</string>
+    <string name="doze_settings_help_text">Bu özəllik bildiriş ekranını başlatmaq üçün sensorları istifadə edir. Seçilmiş sensor yalnız cihaz bildiriş alanda fəallaşır, batareya istifadəsini azaltmağa kömək edər. Ekran sönəndə seçilmiş sensoru fəal etmək üçün bir seçənək də var, ancaq bu daha çox batereya istifadəsinə səbəb ola bilər.</string>
+</resources>
