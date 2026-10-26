@@ -72,8 +72,9 @@ genfscon sysfs /module/cpufreq_bouncing                            u:object_r:ve
 genfscon proc /pogopin    u:object_r:vendor_proc_oplus_pogo_keyboard:s0
 
 # Powerstats
-genfscon sysfs /devices/virtual/powercap     u:object_r:vendor_sysfs_powercap:s0
-genfscon sysfs /class/powercap               u:object_r:vendor_sysfs_powercap:s0
+
+# Qualcomm video codec hardware SKU
+genfscon sysfs /devices/platform/soc/aa00000.qcom,vidc1/sku_version u:object_r:vendor_sysfs_sku:s0
 
 # Secure
 genfscon proc /oplus_secure_common    u:object_r:vendor_proc_oppo_secure_common_file:s0

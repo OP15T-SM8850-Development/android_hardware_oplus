@@ -3,3 +3,6 @@ horae    u:object_r:horae_service:s0
 
 # OSENSE
 osensemanager   u:object_r:osense_service:s0
+# Oplus app privacy services
+oplus_accesscontrol    u:object_r:oplus_accesscontrol_service:s0
+security_permission    u:object_r:oplus_security_permission_service:s0

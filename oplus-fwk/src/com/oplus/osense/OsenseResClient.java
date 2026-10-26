@@ -52,4 +52,8 @@ public class OsenseResClient {
     }
 
     public void osenseSendFling(MotionEvent ev, int duration) {}
+
+    public long osenseSetSceneAction(com.oplus.osense.info.OsenseSaRequest request) {
+        return 0L;
+    }
 }
